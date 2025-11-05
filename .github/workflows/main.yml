@@ -47,7 +47,6 @@ jobs:
           tags: |
             type=raw,value=latest
             type=raw,value=build-${{ github.run_number }}
-            type=sha,prefix={{branch}}-
 
       # 6. Build y Push de la imagen Docker
       - name: Build and push Docker image
