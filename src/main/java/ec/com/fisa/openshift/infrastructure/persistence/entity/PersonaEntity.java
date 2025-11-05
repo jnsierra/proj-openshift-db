@@ -1,4 +1,4 @@
-package ec.com.fisa.openshift.entity;
+package ec.com.fisa.openshift.infrastructure.persistence.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Column;
@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "persona")
-public class Persona extends PanacheEntity {
+public class PersonaEntity extends PanacheEntity {
 
     @Column(nullable = false, length = 100)
     public String nombre;
@@ -18,10 +18,10 @@ public class Persona extends PanacheEntity {
     @Column(nullable = false)
     public Integer edad;
 
-    public Persona() {
+    public PersonaEntity() {
     }
 
-    public Persona(String nombre, String apellido, Integer edad) {
+    public PersonaEntity(String nombre, String apellido, Integer edad) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.edad = edad;
