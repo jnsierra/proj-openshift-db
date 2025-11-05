@@ -2,17 +2,19 @@ services:
   postgres:
     image: postgres:18.0-alpine3.22
     container_name: postgres-openshift
+    env_file:
+      - ../../../../.env
     environment:
-      POSTGRES_USER: openshift
-      POSTGRES_PASSWORD: openshift
-      POSTGRES_DB: proj-openshift
+      POSTGRES_USER: ${POSTGRES_USER:-openshift}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-openshift}
+      POSTGRES_DB: ${POSTGRES_DB:-proj-openshift}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U openshift"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-openshift}"]
       interval: 10s
       timeout: 5s
       retries: 5

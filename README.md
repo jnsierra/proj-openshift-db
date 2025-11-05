@@ -4,6 +4,50 @@ This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
+## Configuración del Entorno
+
+Este proyecto utiliza variables de entorno para la configuración de la base de datos.
+
+### Configurar el archivo .env
+
+1. Copia el archivo de ejemplo:
+```shell script
+cp .env.example .env
+```
+
+2. Edita el archivo `.env` con tus credenciales:
+```properties
+# Database Configuration
+POSTGRES_USER=openshift
+POSTGRES_PASSWORD=openshift
+POSTGRES_DB=proj-openshift
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+
+# Application Configuration
+APP_PORT=8080
+```
+
+### Variables de Entorno Disponibles
+
+| Variable | Descripción | Valor por Defecto |
+|----------|-------------|-------------------|
+| `POSTGRES_USER` | Usuario de PostgreSQL | `openshift` |
+| `POSTGRES_PASSWORD` | Contraseña de PostgreSQL | `openshift` |
+| `POSTGRES_DB` | Nombre de la base de datos | `proj-openshift` |
+| `POSTGRES_HOST` | Host de PostgreSQL | `localhost` |
+| `POSTGRES_PORT` | Puerto de PostgreSQL | `5432` |
+
+> **Nota:** El archivo `.env` está en `.gitignore` y no se commitea al repositorio por seguridad.
+
+### Iniciar la Base de Datos
+
+```shell script
+docker compose -f src/main/resources/compose/docker-compose.yml up -d
+```
+
+El contenedor de PostgreSQL utilizará automáticamente las variables definidas en el archivo `.env`.
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:

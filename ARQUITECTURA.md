@@ -151,14 +151,38 @@ curl -X PUT http://localhost:8080/api/personas/1 \
 curl -X DELETE http://localhost:8080/api/personas/1
 ```
 
+## Configuración
+
+El proyecto utiliza variables de entorno para la configuración de la base de datos, siguiendo las mejores prácticas de la metodología 12-Factor App.
+
+### Variables de Entorno
+
+Las credenciales y configuraciones están externalizadas en un archivo `.env`:
+
+```properties
+POSTGRES_USER=openshift
+POSTGRES_PASSWORD=openshift
+POSTGRES_DB=proj-openshift
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+```
+
+Para más información sobre configuración, consulta [CONFIGURACION.md](CONFIGURACION.md).
+
 ## Ejecución
 
-1. Iniciar la base de datos:
+1. Configurar el archivo `.env`:
+```bash
+cp .env.example .env
+# Edita el archivo .env con tus credenciales
+```
+
+2. Iniciar la base de datos:
 ```bash
 docker compose -f src/main/resources/compose/docker-compose.yml up -d
 ```
 
-2. Ejecutar la aplicación:
+3. Ejecutar la aplicación:
 ```bash
 ./mvnw quarkus:dev
 ```
