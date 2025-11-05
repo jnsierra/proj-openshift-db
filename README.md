@@ -58,6 +58,66 @@ You can run your application in dev mode that enables live coding using:
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
 
+## Ejecutar con Docker
+
+El proyecto incluye un `Dockerfile` optimizado y Docker Compose para facilitar el despliegue.
+
+### Opción 1: Solo Base de Datos (para desarrollo local)
+
+```bash
+# Iniciar solo PostgreSQL
+docker compose -f src/main/resources/compose/docker-compose.yml up -d
+
+# Ejecutar la aplicación localmente
+./mvnw quarkus:dev
+```
+
+### Opción 2: Aplicación Completa con Docker Compose (Recomendado)
+
+```bash
+# Configurar variables de entorno
+cp .env.example .env
+
+# Construir y levantar todos los servicios
+docker compose up -d --build
+
+# Ver logs
+docker compose logs -f
+
+# Detener servicios
+docker compose down
+```
+
+Esto iniciará:
+- PostgreSQL en `localhost:5432`
+- Aplicación Quarkus en `localhost:8080`
+
+### Construcción Manual de la Imagen
+
+```bash
+# Construir la imagen Docker
+docker build -t proj-openshift-db:1.0.0 .
+
+# Ejecutar el contenedor
+docker run -d \
+  --name proj-openshift-app \
+  --env-file .env \
+  -p 8080:8080 \
+  proj-openshift-db:1.0.0
+```
+
+### Verificar el Estado
+
+```bash
+# Ver servicios corriendo
+docker compose ps
+
+# Verificar health check
+curl http://localhost:8080/q/health
+```
+
+Para más detalles sobre Docker, consulta [DOCKER.md](DOCKER.md).
+
 ## Documentación de la API
 
 Este proyecto incluye documentación interactiva de la API REST usando **Swagger UI / OpenAPI**.

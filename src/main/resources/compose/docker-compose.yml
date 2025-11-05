@@ -3,7 +3,7 @@ services:
     image: postgres:18.0-alpine3.22
     container_name: postgres-openshift
     env_file:
-      - ../../../../.env
+      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-openshift}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-openshift}
@@ -12,6 +12,8 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - app-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-openshift}"]
@@ -19,5 +21,35 @@ services:
       timeout: 5s
       retries: 5
 
+  app:
+    image: proj-openshift-db:1.0.0
+    container_name: proj-openshift-app
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-openshift}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-openshift}
+      POSTGRES_DB: ${POSTGRES_DB:-proj-openshift}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/q/health/live"]
+      interval: 30s
+      timeout: 3s
+      start_period: 40s
+      retries: 3
+
 volumes:
   db-data:
+
+networks:
+  app-network:
+    driver: bridge
