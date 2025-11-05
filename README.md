@@ -14,6 +14,41 @@ You can run your application in dev mode that enables live coding using:
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
 
+## Documentación de la API
+
+Este proyecto incluye documentación interactiva de la API REST usando **Swagger UI / OpenAPI**.
+
+### Acceso a la Documentación
+
+Una vez que la aplicación esté ejecutándose, puedes acceder a:
+
+#### Swagger UI (Interfaz Interactiva)
+```
+http://localhost:8080/swagger-ui
+```
+
+Desde Swagger UI puedes:
+- Ver todos los endpoints disponibles
+- Probar los endpoints directamente desde el navegador
+- Ver los esquemas de datos (DTOs)
+- Ver ejemplos de request/response
+
+#### OpenAPI Schema
+```
+http://localhost:8080/q/openapi        # Formato JSON
+http://localhost:8080/q/openapi?format=yaml  # Formato YAML
+```
+
+### Endpoints Disponibles
+
+- `GET /api/personas` - Listar todas las personas
+- `GET /api/personas/{id}` - Obtener persona por ID
+- `POST /api/personas` - Crear nueva persona
+- `PUT /api/personas/{id}` - Actualizar persona
+- `DELETE /api/personas/{id}` - Eliminar persona
+
+Para más detalles, consulta el archivo [SWAGGER.md](SWAGGER.md).
+
 ## Packaging and running the application
 
 The application can be packaged using:
