@@ -22,7 +22,8 @@ services:
       retries: 5
 
   app:
-    image: jesusnicolassierra/proj-openshift-db
+    image: ${DOCKER_USERNAME:-tu-usuario}/proj-openshift-db:latest
+    platform: linux/amd64
     container_name: proj-openshift-app
     env_file:
       - .env
