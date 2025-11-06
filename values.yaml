@@ -1,0 +1,36 @@
+name: microservicio-2
+
+# Kubernetes namespace to install into (can be overridden)
+namespace: nicolas-sierra-dev
+
+replicaCount: 1
+
+container:
+  # Full image name without tag (e.g. 'adonispaz9506/hola-mundo-clase567')
+  image: "jesusnicolassierra/proj-openshift-db"
+  tag: "build-{{ tag }}"
+  port: 8080
+
+service:
+  type: ClusterIP
+  port: 4000
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: "800Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1500Mi"
+
+hpa:
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 75
+
+configmap:
+  database: "192.168.1.1"
+
+secret:
+  # plain text password; template will base64-encode when placing into `data:`
+  password: "hola"
