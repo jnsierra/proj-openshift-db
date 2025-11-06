@@ -22,7 +22,7 @@ services:
       retries: 5
 
   app:
-    image: proj-openshift-db:1.0.0
+    image: jesusnicolassierra/proj-openshift-db
     container_name: proj-openshift-app
     env_file:
       - .env
