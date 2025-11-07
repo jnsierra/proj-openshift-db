@@ -107,5 +107,5 @@ jobs:
           cat values.yaml
       - name: Deploy files
         run: |
-          helm show chart oci://registry-1.docker.io/jesusnicolassierra/proj-openshift-chart --version 1
-          helm upgrade --install proj-openshift-db oci://registry-1.docker.io/jesusnicolassierra/proj-openshift-chart --version 1 --values values.yaml
+          helm show chart oci://registry-1.docker.io/jesusnicolassierra/proj-openshift-chart --version 2
+          helm upgrade --install proj-openshift-db oci://registry-1.docker.io/jesusnicolassierra/proj-openshift-chart --version 2 --values values.yaml
