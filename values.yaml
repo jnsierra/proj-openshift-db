@@ -1,15 +1,17 @@
-name: microservicio-2
+name: proj-openshift-chart
 
 # Kubernetes namespace to install into (can be overridden)
 namespace: nicolas-sierra-dev
 
 replicaCount: 1
 
-container:
-  # Full image name without tag (e.g. 'adonispaz9506/hola-mundo-clase567')
-  image: "jesusnicolassierra/proj-openshift-db"
+
+image:
+  repository: jesusnicolassierra/proj-openshift-db
+  # This sets the pull policy for images.
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
   tag: "build-{{ tag }}"
-  port: 8080
 
 service:
   type: ClusterIP
@@ -41,3 +43,13 @@ secret:
   data:
     POSTGRES_USER: "openshift"
     POSTGRES_PASSWORD: "openshift"
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  httpGet:
+    path: /q/health/live
+    port: 8080
+readinessProbe:
+  httpGet:
+    path: /q/health/ready
+    port: 8080
