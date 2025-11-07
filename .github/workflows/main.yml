@@ -78,3 +78,34 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Tags:**" >> $GITHUB_STEP_SUMMARY
           echo "${{ steps.meta.outputs.tags }}" | sed 's/^/- /' >> $GITHUB_STEP_SUMMARY
+          
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install OC CLI
+        run: |
+          curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xz          
+          sudo mv oc /usr/local/bin/          
+          oc version
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.12.0
+      - name: Login in Openshift
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: https://api.rm1.0a51.p1.openshiftapps.com:6443
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+      - name: Update Deployment tag
+        run: |
+          echo "Reemplazando {{ tag }} con ${{ github.run_number }}"
+          sed -i "s|{{ tag }}|${{ github.run_number }}|g" openshift-deployment.yaml
+          sed -i "s|{{ tag }}|${{ github.run_number }}|g" values.yaml
+          cat values.yaml
+      - name: Deploy files
+        run: |
+          helm show chart oci://registry-1.docker.io/jesusnicolassierra/proj-openshift-chart --version 1
+          helm upgrade --install proj-openshift-db oci://registry-1.docker.io/jesusnicolassierra/proj-openshift-chart --version 1 --values values.yaml

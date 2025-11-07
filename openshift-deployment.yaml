@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
       - name: proj-openshift-db
-        image: jesusnicolassierra/proj-openshift-db:latest
+        image: jesusnicolassierra/proj-openshift-db:{{ tag }}
         ports:
         - containerPort: 8080
           protocol: TCP
