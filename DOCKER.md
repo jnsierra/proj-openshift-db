@@ -61,10 +61,10 @@ services:
 
 ```bash
 # Construir la imagen con tag
-docker build -t proj-openshift-db:1.0.0 .
+docker build -t jesusnicolassierra/proj-openshift-db:1.0.0 .
 
 # O con tag latest
-docker build -t proj-openshift-db:latest .
+docker build -t jesusnicolassierra/proj-openshift-db:latest .
 ```
 
 ### Verificar la imagen creada

@@ -20,7 +20,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
   app:
     image: ${DOCKER_USERNAME:-tu-usuario}/proj-openshift-db:latest
     platform: linux/amd64
@@ -47,7 +46,19 @@ services:
       timeout: 3s
       start_period: 40s
       retries: 3
-
+  web:
+    image: ${DOCKER_USERNAME:-tu-usuario}/proj-openshift-web:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - BACKEND_URL=http://app:8080/api/personas
+    restart: unless-stopped
+    networks:
+      - app-network
+    depends_on:
+      app:
+        condition: service_healthy
 volumes:
   db-data:
 
