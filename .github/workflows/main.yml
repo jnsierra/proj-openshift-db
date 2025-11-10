@@ -1,111 +1,14 @@
-name: CI-Proj-openshift-db
+name: CI-DockerBuild-db
 
-on:
+on: 
   push:
     branches: ["main"]
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      # 1. Clona tu repositorio en la máquina virtual
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # 2. Debug: Verificar que el Dockerfile existe
-      - name: Verify Dockerfile exists
-        run: |
-          echo "Checking for Dockerfile..."
-          ls -la
-          if [ -f "Dockerfile" ]; then
-            echo "✓ Dockerfile found"
-            cat Dockerfile | head -20
-          else
-            echo "✗ Dockerfile NOT found"
-            exit 1
-          fi
-
-      # 3. Setup QEMU para emulación multi-arquitectura
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: linux/amd64,linux/arm64
-
-      # 4. Setup Docker Buildx (requerido para build-push-action@v5)
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # 5. Login a Docker Hub
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # 5. Extraer metadata (tags, labels)
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ secrets.DOCKER_USERNAME }}/proj-openshift-db
-          tags: |
-            type=raw,value=latest
-            type=raw,value=build-${{ github.run_number }}
-
-      # 6. Build y Push de la imagen Docker (Multi-plataforma)
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      # 7. Resumen del build
-      - name: Build summary
-        run: |
-          echo "## Docker Build Successful! 🚀" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Image:** \`${{ secrets.DOCKER_USERNAME }}/proj-openshift-db\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Platforms:** \`linux/amd64\`, \`linux/arm64\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Tags:**" >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.meta.outputs.tags }}" | sed 's/^/- /' >> $GITHUB_STEP_SUMMARY
-          
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Install OC CLI
-        run: |
-          curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xz          
-          sudo mv oc /usr/local/bin/          
-          oc version
-      - name: Install Helm
-        uses: azure/setup-helm@v3
-        with:
-          version: v3.12.0
-      - name: Login in Openshift
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: https://api.rm1.0a51.p1.openshiftapps.com:6443
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-      - name: Update Deployment tag
-        run: |
-          echo "Reemplazando {{ tag }} con ${{ github.run_number }}"
-          sed -i "s|{{ tag }}|${{ github.run_number }}|g" openshift-deployment.yaml
-          sed -i "s|{{ tag }}|${{ github.run_number }}|g" values.yaml
-          cat values.yaml
-      - name: Deploy files
-        run: |
-          helm show chart oci://registry-1.docker.io/jesusnicolassierra/proj-openshift-chart --version 2
-          helm upgrade --install proj-openshift-db oci://registry-1.docker.io/jesusnicolassierra/proj-openshift-chart --version 2 --values values.yaml
+  build-and-deploy:
+    uses: jnsierra/devops-pipelines/.github/workflows/docker-workflow.yml@main
+    with:
+      docker_image_name: proj-openshift-db
+      name_project: proj-openshift-db     
+    secrets: inherit
