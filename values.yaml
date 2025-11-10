@@ -53,3 +53,6 @@ readinessProbe:
   httpGet:
     path: /q/health/ready
     port: 8080
+
+networkPolicy:
+  enabled: false
